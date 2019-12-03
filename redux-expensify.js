@@ -2,15 +2,13 @@ import { createStore, combineReducers } from 'redux';
 import uuid from 'uuid';
 
 // Add Expense
-const addExpense = (
-  { 
+const addExpense = ({ 
     description = '', 
     note = '', 
     amount = 0, 
-    createdAt = 0
-} = {}) => ({
+    createdAt = 0 } = {}) => ({
   type: 'ADD_EXPENSE',
-  expense: {
+  expense: { // 이게 action.expense
     id: uuid(),
     description,
     note,
@@ -22,6 +20,17 @@ const addExpense = (
 const removeExpense = ({ id } = {}) => ({
   type: 'REMOVE_EXPENSE',
   id
+});
+
+const editExpense = (id, updates) => ({
+  type: 'EDIT_EXPENSE',
+  id,
+  updates
+});
+
+const setTextFilter = (text='') => ({
+  type: 'SET_TEXT_FILTER',
+  text
 })
 
 // Remove Expense
@@ -39,15 +48,26 @@ const expenseReducer = (state = expenseReducerDefaultState, action) => {
   switch(action.type){
     case 'ADD_EXPENSE': 
       // return state.concat(action.expense)
-      return [
+      return [ // concat 과 같은 의미
         ...state, 
         action.expense
       ];
     case 'REMOVE_EXPENSE':
-        return state.filter(({ id }) => {
+        return state.filter(({ id }) => { // 여기서 state는 expense를 가르킨다
           return id !== action.id
         })
-
+    case 'EDIT_EXPENSE': 
+        return state.map((expense) => { // action의 expense 객체를 그대로 넣었다
+          if(expense.id ===  action.id) {
+            return { // 객체 비구조화할당
+              ...expense,
+              ...action.updates
+            }
+          } else {
+            return expense
+          }
+        })
+    
     default: 
       return state;
   }
@@ -62,6 +82,12 @@ const filterReducerDefaultState = {
 
 const filterReducer = (state = filterReducerDefaultState, action) => {
   switch(action.type) {
+
+    case 'SET_TEXT_FILTER':
+    return {
+      ...state,
+      text: action.text
+    }
     default: 
     return state;
   }
@@ -92,9 +118,13 @@ const expenseTwo = store.dispatch(addExpense({
   amount: 300
 }))
 
-store.dispatch((removeExpense({id: expenseOne.expense.id})))
+store.dispatch((removeExpense({id: expenseOne.expense.id})));
+store.dispatch(editExpense(expenseTwo.expense.id, { amount: 500 }));
+
+store.dispatch(setTextFilter('rent'));
 
 console.log(expenseOne);
+
 const demoState = {
   expenses: [{
     id: 'seasdfsd',
@@ -111,4 +141,15 @@ const demoState = {
     endData: undefined
   }
 };
+
+const user = {
+  name: "Sean",
+  age: 24
+};
+
+console.log({ // transform-object-rest-spread
+  ...user,
+  age: 27, // overwrite 
+  location: "Repubic of Korea"
+})
 
