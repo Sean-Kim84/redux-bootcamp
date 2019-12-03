@@ -3,12 +3,18 @@ import { createStore } from 'redux';
 const store = createStore((state = { count: 0 }, action) => {
   switch(action.type){
     case 'INCREMENT':
+      const incrementBy = typeof action.incrementBy === 'number' ? action.incrementBy : 1;
       return {
-        count: state.count + 1
+        count: state.count + incrementBy
       }
     case 'DECREMENT':
+      const decrementBy = typeof action.decrement === 'number' ? action.decrement : 1;
       return {
-        count: state.count -1
+        count: state.count -  decrementBy, 
+      }
+    case 'SET': 
+      return {
+        count: action.count
       }
     case 'RESET': 
       return {
@@ -17,23 +23,23 @@ const store = createStore((state = { count: 0 }, action) => {
     default :
       return state
     }
-  // if(action.type === 'INCREMENT'){
-  //   return {
-  //     count: state.count + 1
-  //   };
-  // } else {
-  //   return state
-  // }
-  console.log('running');
-  return state;
 }); 
 
-console.log(store.getState());
+const unsubscribe = store.subscribe(() => { // 모든 액션들을 모아서 순차적으로 처리해준다
+  console.log(store.getState());
+})
+
 
 /* Action - than an object that gets sent to store */
 // I'd like to increment the count
-store.dispatch({
+store.dispatch({ // 위의 action 객체의 argument 로 간다
   type: 'INCREMENT',
+  incrementBy: 5
+});
+
+store.dispatch({
+  type: 'DECREMENT',
+  decrement: 10
 });
 
 store.dispatch({
@@ -41,15 +47,12 @@ store.dispatch({
 });
 
 store.dispatch({
-  type: 'DECREMENT'
-});
-
-store.dispatch({
-  type: 'RESET'
+  type:  'RESET'
 })
 
-console.log(store.getState()); // getState 로 state를 가져올 수있다.
+store.dispatch({
+  type: 'SET',
+  count: 101
+})
 
-
-
-// I'd like to reset the count to zero
+unsubscribe();
