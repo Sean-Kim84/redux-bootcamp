@@ -39,32 +39,38 @@ const setCount = ({count}) => ({
 //   type: 'DECREMENT'
 // });
 
+/* Reducers */
+// 1. Reducers are pure functions
+// 2. Never change state or Actions 
 
-const store = createStore((state = { count: 0 }, action) => {
-  switch(action.type){
+
+const countReducer = (state= {count: 0}, action) => {
+  switch (action.type) {
     case 'INCREMENT':
       const incrementBy = typeof action.incrementBy === 'number' ? action.incrementBy : 1;
       return {
         count: state.count + incrementBy
       }
-    case 'DECREMENT':
-      const decrementBy = typeof action.decrementBy === 'number' ? action.decrementBy : 1;
-      return {
-        count: state.count -  decrementBy, 
-      }
-    case 'SET': 
-      return {
-        count: action.count
-      }
-    case 'RESET': 
-      return {
-        count: 0
-      }
-    default :
-      return state
-    }
-}); 
+      case 'DECREMENT':
+        const decrementBy = typeof action.decrementBy === 'number' ? action.decrementBy : 1;
+        return {
+          count: state.count - decrementBy,
+        }
+        case 'SET':
+          return {
+            count: action.count
+          }
+          case 'RESET':
+            return {
+              count: 0
+            }
+            default:
+              return state
+  }
+}
 
+
+const store = createStore(countReducer)
 const unsubscribe = store.subscribe(() => { // 모든 액션들을 모아서 순차적으로 처리해준다
   console.log(store.getState());
 })
