@@ -1,5 +1,45 @@
 import { createStore } from 'redux';
 
+// const add = (data) => {
+//   return data.a + data.b
+// }
+
+const add = ({ a,b }, c) => {
+  return a + b + c;
+}
+console.log(add({ a: 1, b:12 },100))
+
+/* Destructuring */
+
+// const incrementCount = (payload = {}) => ({
+//   type: 'INCREMENT',
+//   incrementBy: typeof payload.incrementBy === 'number' ? payload.incrementBy : 1
+//  });
+
+const incrementCount = ({incrementBy = 1} = {}) => ({
+  type: 'INCREMENT',
+  incrementBy
+});
+
+const decrementCount = ({ decrementBy = 1 } = {}) => ({
+  type: 'DECREMENT',
+  decrementBy 
+})
+
+const resetCount = () => ({
+  type: 'RESET'
+})
+
+const setCount = ({count}) => ({
+  type: 'SET',
+  count
+}) 
+
+// const decrementCount = () => ({
+//   type: 'DECREMENT'
+// });
+
+
 const store = createStore((state = { count: 0 }, action) => {
   switch(action.type){
     case 'INCREMENT':
@@ -8,7 +48,7 @@ const store = createStore((state = { count: 0 }, action) => {
         count: state.count + incrementBy
       }
     case 'DECREMENT':
-      const decrementBy = typeof action.decrement === 'number' ? action.decrement : 1;
+      const decrementBy = typeof action.decrementBy === 'number' ? action.decrementBy : 1;
       return {
         count: state.count -  decrementBy, 
       }
@@ -32,27 +72,38 @@ const unsubscribe = store.subscribe(() => { // 모든 액션들을 모아서 순
 
 /* Action - than an object that gets sent to store */
 // I'd like to increment the count
-store.dispatch({ // 위의 action 객체의 argument 로 간다
+store.dispatch({ // 위의 action 객 체의 argument 로 간다
   type: 'INCREMENT',
   incrementBy: 5
 });
 
-store.dispatch({
-  type: 'DECREMENT',
-  decrement: 10
-});
+store.dispatch(incrementCount({incrementBy: 10}))
 
-store.dispatch({
-  type: 'DECREMENT'
-});
+store.dispatch(incrementCount());
 
-store.dispatch({
-  type:  'RESET'
-})
+store.dispatch(decrementCount({decrementBy: 20}));
 
-store.dispatch({
-  type: 'SET',
-  count: 101
-})
+store.dispatch(decrementCount());
+
+store.dispatch(setCount({ count: 101 }));
+
+store.dispatch(resetCount());
+
+// store.dispatch(decrementCount());
+
+// store.dispatch(decrementCount({decrementBy: 10}))
+
+// store.dispatch({
+//   type: 'DECREMENT'
+// });
+
+// store.dispatch({
+//   type:  'RESET'
+// })
+
+// store.dispatch({
+//   type: 'SET',
+//   count: 101
+// })
 
 unsubscribe();
